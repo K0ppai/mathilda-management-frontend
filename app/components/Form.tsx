@@ -1,12 +1,13 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import Checkbox from '@mui/joy/Checkbox';
 import axios from 'axios';
 import { Class, ClassContext } from '../context/ClassContext';
 import { useRouter } from 'next/navigation';
+import ClassCheckBoxList from './ClassCheckBoxList';
 
 export interface userBodyInterface {
   email: string;
@@ -19,6 +20,7 @@ export interface memberBodyInterface {
   age: number;
   is_external?: boolean;
   mathilda_class_id?: number;
+  class_ids?: number[];
 }
 
 export interface subjectBodyInterface {
@@ -43,6 +45,7 @@ const Form = ({ slug }: { slug: string }) => {
       : {
           name: '',
           age: 0,
+          class_ids: [],
         };
   const [memberBody, setMemberBody] = useState<memberBodyInterface>(initialMember);
   const [subjectBody, setSubjectBody] = useState({
@@ -103,7 +106,10 @@ const Form = ({ slug }: { slug: string }) => {
       user: userBody,
     };
     const res = await axios.post('http://127.0.0.1:3001/login', body).then((res) => {
-      localStorage.setItem('mathilda', res.data.token);
+      if (res.status === 202) {
+        localStorage.setItem('mathilda', res.data.token);
+        router.push('/me');
+      }
     });
     return res;
   };
@@ -122,7 +128,7 @@ const Form = ({ slug }: { slug: string }) => {
     return res;
   };
 
-  const { data } = useContext(ClassContext);
+  const { classes } = useContext(ClassContext);
 
   return (
     <div className="w-[90]%">
@@ -218,12 +224,14 @@ const Form = ({ slug }: { slug: string }) => {
             <option value="" className="px-4">
               Select a class
             </option>
-            {data?.map((c: Class) => (
+            {classes?.map((c: Class) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
           </select>
+        ) : slug === 'teacher' ? (
+          <ClassCheckBoxList memberBody={memberBody} setMemberBody={setMemberBody} />
         ) : null}
 
         <Button type="submit" color="primary" variant="soft">
