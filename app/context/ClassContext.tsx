@@ -30,31 +30,31 @@ export interface Class {
   teachers: Teacher[];
 }
 
-interface State {
-  token: string;
+interface ClassStateType {
   loading: boolean;
   error: null | string;
   classes: null | Class[];
   user: null | any;
 }
+interface ClassContextType extends ClassStateType {
+  setClassState: React.Dispatch<React.SetStateAction<ClassStateType>>;
+}
 
-export const ClassContext = createContext<State>({
-  token: '',
+export const ClassContext = createContext<ClassContextType>({
   loading: false,
   error: null,
   classes: null,
   user: null,
+  setClassState: () => {},
 });
 
 const Context = ({ children }: { children: React.ReactNode }) => {
-  const [classState, setClassState] = useState<State>({
-    token: '',
+  const [classState, setClassState] = useState<ClassStateType>({
     loading: true,
     error: null,
     classes: null,
     user: null,
   });
-  const token = localStorage.getItem('mathilda');
 
   const fetchUser = async (token: string) => {
     try {
@@ -70,7 +70,6 @@ const Context = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error: any) {
       setClassState({
-        token: '',
         classes: null,
         loading: false,
         error: error.response.classes.errorMessages,
@@ -81,7 +80,6 @@ const Context = ({ children }: { children: React.ReactNode }) => {
 
   const fetchClasses = async () => {
     setClassState({
-      token: '',
       loading: true,
       error: null,
       classes: null,
@@ -92,7 +90,6 @@ const Context = ({ children }: { children: React.ReactNode }) => {
       const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
 
       setClassState({
-        token: token ? token : '',
         loading: false,
         error: null,
         classes: response.data.classes,
@@ -100,7 +97,6 @@ const Context = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error: any) {
       setClassState({
-        token: '',
         classes: null,
         loading: false,
         error: error.response.classes.errorMessages,
@@ -111,12 +107,13 @@ const Context = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchClasses();
-    if (token) {
-      fetchUser(token);
-    }
   }, []);
 
-  return <ClassContext.Provider value={{ ...classState }}>{children}</ClassContext.Provider>;
+  return (
+    <ClassContext.Provider value={{ ...classState, setClassState }}>
+      {children}
+    </ClassContext.Provider>
+  );
 };
 
 export default Context;

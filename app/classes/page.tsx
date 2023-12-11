@@ -24,21 +24,21 @@ const page = async () => {
             </thead>
             <tbody>
               <tr key={c.id} className="p-3">
-                <td className="w-1/3 px-3">
+                <td className="w-1/3 px-10">
                   <ol>
                     {c.students.map((s) => (
                       <li className="list-decimal">{s.name}</li>
                     ))}
                   </ol>
                 </td>
-                <td className="w-1/3 px-3">
+                <td className="w-1/3 px-10">
                   <ol>
                     {c.subjects.map((s) => (
                       <li className="list-decimal">{s.name}</li>
                     ))}
                   </ol>
                 </td>
-                <td className="w-1/3 px-3">
+                <td className="w-1/3 px-10">
                   <ol>
                     {c.teachers.map((t) => (
                       <li className="list-decimal">{t.name}</li>

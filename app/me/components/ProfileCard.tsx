@@ -1,10 +1,8 @@
 'use client';
 
-import { ClassContext } from '@/app/context/ClassContext';
-import React, { useContext } from 'react';
+import React from 'react';
 
-const ProfileCard = () => {
-  const { user } = useContext(ClassContext);
+const ProfileCard = ({ user }: { user: any }) => {
   const role = user?.role;
 
   return (

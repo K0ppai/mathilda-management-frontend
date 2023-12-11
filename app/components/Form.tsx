@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Class, ClassContext } from '../context/ClassContext';
 import { useRouter } from 'next/navigation';
 import ClassCheckBoxList from './ClassCheckBoxList';
+import { setCookie, getCookie } from 'cookies-next';
 
 export interface userBodyInterface {
   email: string;
@@ -53,6 +54,7 @@ const Form = ({ slug }: { slug: string }) => {
     mathilda_class_id: 0,
   });
   const router = useRouter();
+  const { classes, setClassState } = useContext(ClassContext);
 
   const handleUserBodyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -105,9 +107,22 @@ const Form = ({ slug }: { slug: string }) => {
     const body = {
       user: userBody,
     };
-    const res = await axios.post('http://127.0.0.1:3001/login', body).then((res) => {
+    const res = await axios.post('http://127.0.0.1:3001/login', body).then(async (res) => {
       if (res.status === 202) {
-        localStorage.setItem('mathilda', res.data.token);
+        setCookie('mathilda', res.data.token, {
+          maxAge: 30 * 24 * 60 * 60,
+        });
+
+        const user = await axios.get('http://127.0.0.1:3001/me', {
+          headers: {
+            Authorization: `Bearer ${getCookie('mathilda')}`,
+          },
+        });
+
+        setClassState((prev) => ({
+          ...prev,
+          user: user.data,
+        }));
         router.push('/me');
       }
     });
@@ -127,8 +142,6 @@ const Form = ({ slug }: { slug: string }) => {
     });
     return res;
   };
-
-  const { classes } = useContext(ClassContext);
 
   return (
     <div className="w-[90]%">
