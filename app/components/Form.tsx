@@ -1,12 +1,17 @@
 'use client';
 
-import { useContext, useState } from 'react';
-import Input from '@mui/joy/Input';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/joy/Button';
-import Checkbox from '@mui/joy/Checkbox';
-import axios from 'axios';
-import { Class, ClassContext } from '../context/ClassContext';
+import { ClassContext } from '../context/ClassContext';
 import { useRouter } from 'next/navigation';
+import ClassCheckBoxList from './ClassCheckBoxList';
+import EmailInput from './EmailInput';
+import PasswordInput from './PasswordInput';
+import NameInput from './NameInput';
+import AgeInput from './AgeInput';
+import ExternalCheckBox from './ExternalCheckBox';
+import ClassSelect from './ClassSelect';
+import usePost from '@/hooks/usePost';
 
 export interface userBodyInterface {
   email: string;
@@ -19,6 +24,7 @@ export interface memberBodyInterface {
   age: number;
   is_external?: boolean;
   mathilda_class_id?: number;
+  class_ids?: number[];
 }
 
 export interface subjectBodyInterface {
@@ -26,7 +32,7 @@ export interface subjectBodyInterface {
   mathilda_class_id: number;
 }
 
-const Form = ({ slug }: { slug: string }) => {
+const Form = ({ slug, type, id }: { slug: string; type?: string; id?: string }) => {
   const [userBody, setUserBody] = useState<userBodyInterface>({
     email: '',
     password: '',
@@ -43,13 +49,14 @@ const Form = ({ slug }: { slug: string }) => {
       : {
           name: '',
           age: 0,
+          class_ids: [],
         };
   const [memberBody, setMemberBody] = useState<memberBodyInterface>(initialMember);
   const [subjectBody, setSubjectBody] = useState({
     name: '',
     mathilda_class_id: 0,
   });
-  const router = useRouter();
+  const { classes } = useContext(ClassContext);
 
   const handleUserBodyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,6 +69,7 @@ const Form = ({ slug }: { slug: string }) => {
       ...memberBody,
       [name]: name === 'age' || name === 'mathilda_class_id' ? parseInt(value) : value,
     });
+    console.log(memberBody);
   };
 
   const handleSubjectBodyChange = (e: any) => {
@@ -70,169 +78,82 @@ const Form = ({ slug }: { slug: string }) => {
       ...subjectBody,
       [name]: name === 'mathilda_class_id' ? parseInt(value) : value,
     });
-    console.log(subjectBody);
   };
 
-  const postTeacher = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const body = {
-      user: userBody,
-      teacher: memberBody,
-    };
-    const res = await axios.post('http://127.0.0.1:3001/teachers', body).then((res) => {
-      res.status === 201 ? router.push('/session/new') : null;
-    });
-    return res;
-  };
-
-  const postStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const body = {
-      user: userBody,
-      student: memberBody,
-    };
-    const res = await axios.post('http://127.0.0.1:3001/students', body).then((res) => {
-      res.status === 201 ? router.push('/session/new') : null;
-    });
-    return res;
-  };
-
-  const postNewSession = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const body = {
-      user: userBody,
-    };
-    const res = await axios.post('http://127.0.0.1:3001/login', body).then((res) => {
-      localStorage.setItem('mathilda', res.data.token);
-    });
-    return res;
-  };
-
-  const postSubject = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const body = {
-      subject: subjectBody,
-    };
-    const token = localStorage.getItem('mathilda');
-    const res = await axios.post('http://127.0.0.1:3001/subjects', body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res;
-  };
-
-  const { data } = useContext(ClassContext);
+  const { postTeacher, postStudent, postNewSession, postSubject } = usePost();
 
   return (
     <div className="w-[90]%">
       <form
-        onSubmit={
-          slug === 'teacher'
-            ? postTeacher
-            : slug === 'student'
-            ? postStudent
-            : slug === 'session'
-            ? postNewSession
-            : slug === 'subject'
-            ? postSubject
-            : () => {}
-        }
+        className="flex flex-col gap-y-2"
+        onSubmit={(e) => {
+          if (type === 'new') {
+            slug === 'teacher'
+              ? postTeacher(e, 'new', userBody, memberBody)
+              : slug === 'student'
+              ? postStudent(e, 'new', userBody, memberBody)
+              : slug === 'session'
+              ? postNewSession(e, userBody)
+              : slug === 'subject'
+              ? postSubject(e, 'new', subjectBody)
+              : () => {};
+          } else if (type === 'edit') {
+            slug === 'teacher'
+              ? postTeacher(e, 'edit', userBody, memberBody, id)
+              : slug === 'student'
+              ? postStudent(e, 'edit', userBody, memberBody, id)
+              : slug === 'subject'
+              ? postSubject(e, 'edit', subjectBody, id)
+              : () => {};
+          }
+        }}
       >
-        {slug !== 'subject' ? (
+        {slug !== 'subject' && type === 'new' ? (
           <>
-            <Input
-              color="primary"
-              name="email"
-              variant="soft"
-              type="email"
-              placeholder="Email"
-              required
-              onChange={handleUserBodyChange}
-            />
-            <Input
-              color="primary"
-              name="password"
-              variant="soft"
-              type="password"
-              placeholder="Password"
-              required
-              onChange={handleUserBodyChange}
-            />
+            <EmailInput handleUserBodyChange={handleUserBodyChange} />
+            <PasswordInput handleUserBodyChange={handleUserBodyChange} />
           </>
         ) : null}
 
         {slug !== 'session' ? (
           <>
-            <Input
-              color="primary"
-              name="name"
-              variant="soft"
-              type="text"
-              placeholder="Name"
-              required
-              onChange={
-                slug === 'student' || slug === 'teacher'
-                  ? handleMemberBodyChange
-                  : handleSubjectBodyChange
-              }
+            <NameInput
+              slug={slug}
+              handleMemberBodyChange={handleMemberBodyChange}
+              handleSubjectBodyChange={handleSubjectBodyChange}
             />
             {slug !== 'subject' ? (
-              <Input
-                color="primary"
-                name="age"
-                variant="soft"
-                type="number"
-                placeholder="Age"
-                required
-                onChange={handleMemberBodyChange}
-              />
+              <AgeInput handleMemberBodyChange={handleMemberBodyChange} />
             ) : null}
           </>
         ) : null}
 
         {slug === 'student' ? (
           <>
-            <Checkbox
-              color="primary"
-              label="External"
-              name="is_external"
-              variant="soft"
-              onChange={() => {
-                setMemberBody({
-                  ...memberBody,
-                  is_external: !memberBody.is_external,
-                });
-              }}
-            />
+            <ExternalCheckBox setMemberBody={setMemberBody} />
           </>
         ) : null}
 
         {slug === 'student' || slug === 'subject' ? (
-          <select
-            name="mathilda_class_id"
-            onChange={slug === 'student' ? handleMemberBodyChange : handleSubjectBodyChange}
-            required
-            className="w-full bg-slate-400"
-          >
-            <option value="" className="px-4">
-              Select a class
-            </option>
-            {data?.map((c: Class) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <ClassSelect
+            slug={slug}
+            handleMemberBodyChange={handleMemberBodyChange}
+            handleSubjectBodyChange={handleSubjectBodyChange}
+            classes={classes}
+          />
+        ) : slug === 'teacher' ? (
+          <ClassCheckBoxList memberBody={memberBody} setMemberBody={setMemberBody} />
         ) : null}
 
-        <Button type="submit" color="primary" variant="soft">
-          {slug === 'student' || slug === 'teacher'
+        <button type="submit" className="border p-2 border-blue-200 rounded-md hover:bg-blue-200">
+          {slug === 'student' || (slug === 'teacher' && type === 'new')
             ? 'Onboard a member'
-            : slug === 'subject'
+            : type === 'edit'
+            ? 'Confirm changes'
+            : slug === 'subject' && type === 'new'
             ? 'Create a subject'
             : 'Login'}
-        </Button>
+        </button>
       </form>
     </div>
   );

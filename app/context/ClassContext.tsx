@@ -27,54 +27,80 @@ export interface Class {
   name: string;
   students: Student[];
   subjects: Subject[];
+  teachers: Teacher[];
 }
 
-interface State {
-  token: string;
+interface ClassStateType {
   loading: boolean;
   error: null | string;
-  data: null | Class[];
+  classes: [] | Class[];
+  user: null | any;
+}
+interface ClassContextType extends ClassStateType {
+  setClassState: React.Dispatch<React.SetStateAction<ClassStateType>>;
 }
 
-export const ClassContext = createContext<State>({
-  token: '',
+export const ClassContext = createContext<ClassContextType>({
   loading: false,
   error: null,
-  data: null,
+  classes: [],
+  user: null,
+  setClassState: () => {},
 });
 
 const Context = ({ children }: { children: React.ReactNode }) => {
-  const [classState, setClassState] = useState<State>({
-    token: '',
+  const [classState, setClassState] = useState<ClassStateType>({
     loading: true,
     error: null,
-    data: null,
+    classes: [],
+    user: null,
   });
+
+  const fetchUser = async (token: string) => {
+    try {
+      const response = await axios.get('http://127.0.0.1:3001/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setClassState({
+        ...classState,
+        user: response.data,
+      });
+    } catch (error: any) {
+      setClassState({
+        classes: [],
+        loading: false,
+        error: error.response.classes.errorMessages,
+        user: null,
+      });
+    }
+  };
 
   const fetchClasses = async () => {
     setClassState({
-      token: '',
       loading: true,
       error: null,
-      data: null,
+      classes: [],
+      user: null,
     });
 
     try {
       const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
-      const token = localStorage.getItem('mathilda');
 
       setClassState({
-        token: token ? token : '',
         loading: false,
         error: null,
-        data: response.data.classes,
+        classes: response.data.classes,
+        user: null,
       });
     } catch (error: any) {
       setClassState({
-        token: '',
-        data: null,
+        classes: [],
         loading: false,
-        error: error.response.data.errorMessages,
+        error: error.response.classes.errorMessages,
+        user: null,
       });
     }
   };
@@ -83,7 +109,11 @@ const Context = ({ children }: { children: React.ReactNode }) => {
     fetchClasses();
   }, []);
 
-  return <ClassContext.Provider value={{ ...classState }}>{children}</ClassContext.Provider>;
+  return (
+    <ClassContext.Provider value={{ ...classState, setClassState }}>
+      {children}
+    </ClassContext.Provider>
+  );
 };
 
 export default Context;
