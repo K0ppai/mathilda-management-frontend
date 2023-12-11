@@ -30,12 +30,14 @@ export interface Class {
 }
 
 interface State {
+  token: string;
   loading: boolean;
   error: null | string;
   data: null | Class[];
 }
 
 export const ClassContext = createContext<State>({
+  token: '',
   loading: false,
   error: null,
   data: null,
@@ -43,6 +45,7 @@ export const ClassContext = createContext<State>({
 
 const Context = ({ children }: { children: React.ReactNode }) => {
   const [classState, setClassState] = useState<State>({
+    token: '',
     loading: true,
     error: null,
     data: null,
@@ -50,6 +53,7 @@ const Context = ({ children }: { children: React.ReactNode }) => {
 
   const fetchClasses = async () => {
     setClassState({
+      token: '',
       loading: true,
       error: null,
       data: null,
@@ -57,15 +61,17 @@ const Context = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
+      const token = localStorage.getItem('mathilda');
 
       setClassState({
+        token: token ? token : '',
         loading: false,
         error: null,
         data: response.data.classes,
       });
-      console.log(classState.data)
     } catch (error: any) {
       setClassState({
+        token: '',
         data: null,
         loading: false,
         error: error.response.data.errorMessages,

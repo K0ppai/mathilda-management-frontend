@@ -64,9 +64,13 @@ const Form = ({ slug }: { slug: string }) => {
     });
   };
 
-  const handleSubjectBodyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSubjectBodyChange = (e: any) => {
     const { name, value } = e.target;
-    setSubjectBody({ ...subjectBody, [name]: value });
+    setSubjectBody({
+      ...subjectBody,
+      [name]: name === 'mathilda_class_id' ? parseInt(value) : value,
+    });
+    console.log(subjectBody);
   };
 
   const postTeacher = async (e: React.FormEvent) => {
@@ -93,12 +97,47 @@ const Form = ({ slug }: { slug: string }) => {
     return res;
   };
 
+  const postNewSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const body = {
+      user: userBody,
+    };
+    const res = await axios.post('http://127.0.0.1:3001/login', body).then((res) => {
+      localStorage.setItem('mathilda', res.data.token);
+    });
+    return res;
+  };
+
+  const postSubject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const body = {
+      subject: subjectBody,
+    };
+    const token = localStorage.getItem('mathilda');
+    const res = await axios.post('http://127.0.0.1:3001/subjects', body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  };
+
   const { data } = useContext(ClassContext);
 
   return (
     <div className="w-[90]%">
       <form
-        onSubmit={slug === 'teacher' ? postTeacher : slug === 'student' ? postStudent : () => {}}
+        onSubmit={
+          slug === 'teacher'
+            ? postTeacher
+            : slug === 'student'
+            ? postStudent
+            : slug === 'session'
+            ? postNewSession
+            : slug === 'subject'
+            ? postSubject
+            : () => {}
+        }
       >
         {slug !== 'subject' ? (
           <>
@@ -172,7 +211,7 @@ const Form = ({ slug }: { slug: string }) => {
         {slug === 'student' || slug === 'subject' ? (
           <select
             name="mathilda_class_id"
-            onChange={handleMemberBodyChange}
+            onChange={slug === 'student' ? handleMemberBodyChange : handleSubjectBodyChange}
             required
             className="w-full bg-slate-400"
           >
