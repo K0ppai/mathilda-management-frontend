@@ -16,8 +16,8 @@ const ClassCheckBoxList = ({
   return (
     <div>
       {classes?.map((item) => (
-        <div key={item.id}>
-          <Checkbox
+        <div key={item.id} className='flex items-center gap-x-2'>
+          <input type='checkbox'
             onChange={(e) => {
               if (e.target.checked) {
                 setMemberBody({
@@ -32,7 +32,7 @@ const ClassCheckBoxList = ({
               }
             }}
           />
-          {item.name}
+          <label>{item.name}</label>
         </div>
       ))}
     </div>
