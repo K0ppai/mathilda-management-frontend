@@ -33,7 +33,7 @@ export interface Class {
 interface ClassStateType {
   loading: boolean;
   error: null | string;
-  classes: null | Class[];
+  classes: [] | Class[];
   user: null | any;
 }
 interface ClassContextType extends ClassStateType {
@@ -43,7 +43,7 @@ interface ClassContextType extends ClassStateType {
 export const ClassContext = createContext<ClassContextType>({
   loading: false,
   error: null,
-  classes: null,
+  classes: [],
   user: null,
   setClassState: () => {},
 });
@@ -52,7 +52,7 @@ const Context = ({ children }: { children: React.ReactNode }) => {
   const [classState, setClassState] = useState<ClassStateType>({
     loading: true,
     error: null,
-    classes: null,
+    classes: [],
     user: null,
   });
 
@@ -70,7 +70,7 @@ const Context = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error: any) {
       setClassState({
-        classes: null,
+        classes: [],
         loading: false,
         error: error.response.classes.errorMessages,
         user: null,
@@ -82,7 +82,7 @@ const Context = ({ children }: { children: React.ReactNode }) => {
     setClassState({
       loading: true,
       error: null,
-      classes: null,
+      classes: [],
       user: null,
     });
 
@@ -97,7 +97,7 @@ const Context = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error: any) {
       setClassState({
-        classes: null,
+        classes: [],
         loading: false,
         error: error.response.classes.errorMessages,
         user: null,

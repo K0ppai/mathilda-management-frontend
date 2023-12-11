@@ -1,30 +1,28 @@
-'use client';
-
 import React from 'react';
 
 const ProfileCard = ({ user }: { user: any }) => {
   const role = user?.role;
 
   return (
-    <>
-      <h1>Profile</h1>
+    <div className='mb-2'>
+      <h1 className='text-xl mb-2'>Profile</h1>
       <table>
         <tbody>
           <tr>
-            <td>Name</td>
-            <td>{role === 'student' ? user.student.name : user.teacher.name}</td>
+            <td className='border border-collapse p-2'>Name</td>
+            <td className='border border-collapse p-2'>{role === 'student' ? user.student.name : user.teacher.name}</td>
           </tr>
           <tr>
-            <td>Age</td>
-            <td>{role === 'student' ? user.student.age : user.teacher.age}</td>
+            <td className='border border-collapse p-2'>Age</td>
+            <td className='border border-collapse p-2'>{role === 'student' ? user.student.age : user.teacher.age}</td>
           </tr>
           <tr>
-            <td>Role</td>
-            <td>{role}</td>
+            <td className='border border-collapse p-2'>Role</td>
+            <td className='border border-collapse p-2'>{role}</td>
           </tr>
           <tr>
-            <td>Class</td>
-            <td>
+            <td className='border border-collapse p-2'>Class</td>
+            <td className='border border-collapse p-2'>
               {role === 'student'
                 ? user.student.mathilda_class.name
                 : user.teacher.mathilda_classes.map((c: any) => c.name).join(', ')}
@@ -32,7 +30,7 @@ const ProfileCard = ({ user }: { user: any }) => {
           </tr>
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
