@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
+import SubjectCard from './components/SubjectCard';
 
 const fetchSubjects = async () => {
   const response = await fetch('http://127.0.0.1:3001/subjects', {
@@ -12,6 +13,17 @@ const fetchSubjects = async () => {
   return response;
 };
 
+interface mathildaClassInterface {
+  id: number;
+  name: string;
+}
+export interface subjectInterface {
+  id: number;
+  name: string;
+  mathilda_class_id: number;
+  mathilda_class: mathildaClassInterface;
+}
+
 const page = async () => {
   const subjects = await fetchSubjects();
   const cookie = getCookie('mathilda', { cookies }) || '';
@@ -21,37 +33,21 @@ const page = async () => {
       <table className="w-full mb-2">
         <thead>
           <tr>
-            <th className="w-1/4 border">Id</th>
-            <th className="w-1/4 border">Name</th>
-            <th className="w-1/4 border">Class</th>
-            <th className="w-1/4 border">Action</th>
+            <th className="w-1/4 border p-2">Id</th>
+            <th className="w-1/4 border p-2">Name</th>
+            <th className="w-1/4 border p-2">Class</th>
+            <th className="w-1/4 border p-2">Action</th>
           </tr>
         </thead>
         <tbody>
-          {subjects?.map((subject: any) => (
-            <tr key={subject.id} className="py-3">
-              <td className="w-1/4 border text-center">{subject.id}</td>
-              <td className="w-1/4 border text-center">{subject.name}</td>
-              <td className="w-1/4 border text-center">{subject.mathilda_class.name}</td>
-              <td className="w-1/4 border text-center">
-                {cookie ? (
-                  <Link
-                    href={`/subject/edit/${subject.id.toString()}`}
-                    className=" bg-green-300 hover:bg-green500 p-2 rounded-sm"
-                  >
-                    Edit
-                  </Link>
-                ) : (
-                  <></>
-                )}
-              </td>
-            </tr>
+          {subjects?.map((subject: subjectInterface) => (
+            <SubjectCard key={subject.id} subject={subject} cookie={cookie} />
           ))}
         </tbody>
       </table>
       <div className="flex justify-center">
         {cookie ? (
-          <Link href="/subject/new" className="bg-green-300 hover:bg-green500 p-2 rounded-sm">
+          <Link href="/subject/new" className="bg-blue-200 hover:bg-blue-300 p-2 rounded-sm">
             Add Subject
           </Link>
         ) : (

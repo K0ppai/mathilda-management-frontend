@@ -22,7 +22,7 @@ const ClassSelect = (
         required
         className="w-full p-2 my-2 border bg-blue-100 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
       >
-        <option value="" className="px-4">
+        <option className="px-4">
           Select a class
         </option>
         {classes?.map((c: Class) => (

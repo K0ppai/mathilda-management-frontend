@@ -9,11 +9,11 @@ import { getCookie, setCookie } from 'cookies-next';
 
 const usePost = () => {
   const router = useRouter();
-    const config = {
-      headers: {
-        Authorization: `Bearer ${getCookie('mathilda')}`,
-      },
-    };
+  const config = {
+    headers: {
+      Authorization: `Bearer ${getCookie('mathilda')}`,
+    },
+  };
 
   const postTeacher = async (
     e: React.FormEvent,
@@ -27,7 +27,7 @@ const usePost = () => {
       user: userBody,
       teacher: memberBody,
     };
-    
+
     if (type === 'new') {
       const res = await axios.post('http://127.0.0.1:3001/teachers', body).then((res) => {
         if (res.status === 201) {
@@ -38,12 +38,14 @@ const usePost = () => {
 
       return res;
     } else {
-      const res = await axios.patch(`http://127.0.0.1:3001/teachers/${id}`, body).then((res) => {
-        if (res.status === 200) {
-          router.replace('/me');
-          router.refresh();
-        }
-      });
+      const res = await axios
+        .patch(`http://127.0.0.1:3001/teachers/${id}`, body, config)
+        .then((res) => {
+          if (res.status === 200) {
+            router.replace('/me');
+            router.refresh();
+          }
+        });
 
       return res;
     }
@@ -72,12 +74,14 @@ const usePost = () => {
 
       return res;
     } else {
-      const res = await axios.patch(`http://127.0.0.1:3001/students/${id}`, body).then((res) => {
-        if (res.status === 200) {
-          router.replace('/me');
-          router.refresh();
-        }
-      });
+      const res = await axios
+        .patch(`http://127.0.0.1:3001/students/${id}`, body, config)
+        .then((res) => {
+          if (res.status === 200) {
+            router.replace('/me');
+            router.refresh();
+          }
+        });
 
       return res;
     }
