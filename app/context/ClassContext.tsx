@@ -27,20 +27,23 @@ export interface Class {
   name: string;
   students: Student[];
   subjects: Subject[];
+  teachers: Teacher[];
 }
 
 interface State {
   token: string;
   loading: boolean;
   error: null | string;
-  data: null | Class[];
+  classes: null | Class[];
+  user: null | any;
 }
 
 export const ClassContext = createContext<State>({
   token: '',
   loading: false,
   error: null,
-  data: null,
+  classes: null,
+  user: null,
 });
 
 const Context = ({ children }: { children: React.ReactNode }) => {
@@ -48,39 +51,69 @@ const Context = ({ children }: { children: React.ReactNode }) => {
     token: '',
     loading: true,
     error: null,
-    data: null,
+    classes: null,
+    user: null,
   });
+  const token = localStorage.getItem('mathilda');
+
+  const fetchUser = async (token: string) => {
+    try {
+      const response = await axios.get('http://127.0.0.1:3001/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setClassState({
+        ...classState,
+        user: response.data,
+      });
+    } catch (error: any) {
+      setClassState({
+        token: '',
+        classes: null,
+        loading: false,
+        error: error.response.classes.errorMessages,
+        user: null,
+      });
+    }
+  };
 
   const fetchClasses = async () => {
     setClassState({
       token: '',
       loading: true,
       error: null,
-      data: null,
+      classes: null,
+      user: null,
     });
 
     try {
       const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
-      const token = localStorage.getItem('mathilda');
 
       setClassState({
         token: token ? token : '',
         loading: false,
         error: null,
-        data: response.data.classes,
+        classes: response.data.classes,
+        user: null,
       });
     } catch (error: any) {
       setClassState({
         token: '',
-        data: null,
+        classes: null,
         loading: false,
-        error: error.response.data.errorMessages,
+        error: error.response.classes.errorMessages,
+        user: null,
       });
     }
   };
 
   useEffect(() => {
     fetchClasses();
+    if (token) {
+      fetchUser(token);
+    }
   }, []);
 
   return <ClassContext.Provider value={{ ...classState }}>{children}</ClassContext.Provider>;
