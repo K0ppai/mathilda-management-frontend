@@ -1,6 +1,5 @@
 import React from 'react';
 import { memberBodyInterface } from './Form';
-import Checkbox from '@mui/joy/Checkbox';
 
 const ExternalCheckBox = ({ setMemberBody }: {
   setMemberBody: React.Dispatch<React.SetStateAction<memberBodyInterface>>;

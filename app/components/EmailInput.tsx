@@ -1,6 +1,4 @@
 import React from 'react';
-import { userBodyInterface } from './Form';
-import Input from '@mui/joy/Input';
 
 const EmailInput = ({
   handleUserBodyChange,

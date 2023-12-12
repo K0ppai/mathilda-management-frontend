@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useContext, useState } from 'react';
-import Button from '@mui/joy/Button';
 import { ClassContext } from '../context/ClassContext';
-import { useRouter } from 'next/navigation';
 import ClassCheckBoxList from './ClassCheckBoxList';
 import EmailInput from './EmailInput';
 import PasswordInput from './PasswordInput';

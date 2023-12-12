@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { deleteCookie, getCookie } from 'cookies-next';
+import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 
 const LogoutBtn = () => {

@@ -1,5 +1,4 @@
 import React from 'react'
-import Input from '@mui/joy/Input';
 
 const NameInput = ({
   slug,
