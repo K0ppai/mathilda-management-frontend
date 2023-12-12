@@ -29,17 +29,23 @@ const usePost = () => {
     };
 
     if (type === 'new') {
-      const res = await axios.post('http://127.0.0.1:3001/teachers', body).then((res) => {
-        if (res.status === 201) {
-          router.replace('/session/new');
-          router.refresh();
-        }
-      });
+      const res = await axios
+        .post('https://mathilda-management-6d5c387a84e7.herokuapp.com/teachers', body)
+        .then((res) => {
+          if (res.status === 201) {
+            router.replace('/session/new');
+            router.refresh();
+          }
+        });
 
       return res;
     } else {
       const res = await axios
-        .patch(`http://127.0.0.1:3001/teachers/${id}`, body, config)
+        .patch(
+          `https://mathilda-management-6d5c387a84e7.herokuapp.com/teachers/${id}`,
+          body,
+          config,
+        )
         .then((res) => {
           if (res.status === 200) {
             router.replace('/me');
@@ -65,17 +71,19 @@ const usePost = () => {
     };
 
     if (type === 'new') {
-      const res = await axios.post('http://127.0.0.1:3001/students', body).then((res) => {
-        if (res.status === 201) {
-          router.replace('/session/new');
-          router.refresh();
-        }
-      });
+      const res = await axios
+        .post('https://mathilda-management-6d5c387a84e7.herokuapp.com/students', body)
+        .then((res) => {
+          if (res.status === 201) {
+            router.replace('/session/new');
+            router.refresh();
+          }
+        });
 
       return res;
     } else {
       const res = await axios
-        .patch(`http://127.0.0.1:3001/students/${id}`, body, config)
+        .patch(`https://mathilda-management-6d5c387a84e7.herokuapp.com/students/${id}`, body, config)
         .then((res) => {
           if (res.status === 200) {
             router.replace('/me');
@@ -93,15 +101,17 @@ const usePost = () => {
       user: userBody,
     };
 
-    const res = await axios.post('http://127.0.0.1:3001/login', body).then((res) => {
-      if (res.status === 202) {
-        setCookie('mathilda', res.data.token, {
-          maxAge: 30 * 24 * 60 * 60,
-        });
-        router.replace('/me');
-        router.refresh();
-      }
-    });
+    const res = await axios
+      .post('https://mathilda-management-6d5c387a84e7.herokuapp.com/login', body)
+      .then((res) => {
+        if (res.status === 202) {
+          setCookie('mathilda', res.data.token, {
+            maxAge: 30 * 24 * 60 * 60,
+          });
+          router.replace('/me');
+          router.refresh();
+        }
+      });
 
     return res;
   };
@@ -118,16 +128,22 @@ const usePost = () => {
     };
 
     if (type === 'new') {
-      const res = await axios.post('http://127.0.0.1:3001/subjects', body, config).then((res) => {
-        if (res.status === 201) {
-          router.replace('/subjects');
-          router.refresh();
-        }
-      });
+      const res = await axios
+        .post('https://mathilda-management-6d5c387a84e7.herokuapp.com/subjects', body, config)
+        .then((res) => {
+          if (res.status === 201) {
+            router.replace('/subjects');
+            router.refresh();
+          }
+        });
       return res;
     } else {
       const res = await axios
-        .patch(`http://127.0.0.1:3001/subjects/${id}`, body, config)
+        .patch(
+          `https://mathilda-management-6d5c387a84e7.herokuapp.com/subjects/${id}`,
+          body,
+          config,
+        )
         .then((res) => {
           if (res.status === 200) {
             router.replace('/subjects');

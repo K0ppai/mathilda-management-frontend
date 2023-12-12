@@ -35,7 +35,9 @@ const Context = ({ children }: { children: React.ReactNode }) => {
     });
 
     try {
-      const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
+      const response = await axios.get(
+        'https://mathilda-management-6d5c387a84e7.herokuapp.com/mathilda_classes',
+      );
 
       setClassState({
         ...classState,

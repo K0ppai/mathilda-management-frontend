@@ -4,7 +4,9 @@ import React from 'react';
 import ClassTables from './components/ClassTable';
 
 const fetchClasses = async (): Promise<Class[]> => {
-  const response = await axios.get('http://127.0.0.1:3001/mathilda_classes');
+  const response = await axios.get(
+    'https://mathilda-management-6d5c387a84e7.herokuapp.com/mathilda_classes',
+  );
   return response.data.classes;
 };
 

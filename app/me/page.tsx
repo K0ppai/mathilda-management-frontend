@@ -10,7 +10,7 @@ const fetchUser = async (cookie: string) => {
     Authorization: `Bearer ${cookie}`,
   };
 
-  const response = await fetch('http://127.0.0.1:3001/me', {
+  const response = await fetch('https://mathilda-management-6d5c387a84e7.herokuapp.com/me', {
     method: 'GET',
     cache: 'no-store',
     headers,

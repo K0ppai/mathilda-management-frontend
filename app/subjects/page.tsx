@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import SubjectCard from './components/SubjectCard';
 
 const fetchSubjects = async () => {
-  const response = await fetch('http://127.0.0.1:3001/subjects', {
+  const response = await fetch('https://mathilda-management-6d5c387a84e7.herokuapp.com/subjects', {
     method: 'GET',
     cache: 'no-store',
   })
